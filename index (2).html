@@ -1,0 +1,2573 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DollarUp – Invista em dólar via PIX com rendimento automático</title>
+  <meta name="description" content="Investimento em dólar com rendimento automático de até 12% ao ano. Simples como PIX, sem conta no exterior." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* IDENTIDADE VISUAL DOLLARUP */
+    :root{
+      /* Cores Primárias - Identidade Oficial */
+      --dollarup-green-start: #00D9A3;
+      --dollarup-green-end: #00B386;
+      --dollarup-green: linear-gradient(135deg, #00D9A3 0%, #00B386 100%);
+      --dark-navy: #1A2332;
+      --light-green: #E8FFF9;
+      --white: #FFFFFF;
+      
+      /* Cores Secundárias */
+      --gray-medium: #6B7280;
+      --gray-light: #F9FAFB;
+      --gold: #FFD700;
+      
+      /* Cores de Estado */
+      --success: #10B981;
+      --info: #3B82F6;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      
+      /* Sombras */
+      --shadow: 0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -1px rgba(0,0,0,.04);
+      --shadow-lg: 0 10px 25px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+      --shadow-xl: 0 20px 40px -5px rgba(0,0,0,.12), 0 10px 20px -5px rgba(0,0,0,.08);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: var(--dark-navy);
+      background: var(--white);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, .98);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+      box-shadow: var(--shadow);
+    }
+    
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 24px;
+      color: var(--dark-navy);
+      text-decoration: none;
+      transition: transform .2s;
+    }
+    
+    .brand:hover {
+      transform: translateY(-2px);
+    }
+    
+    .brand svg {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: var(--gray-medium);
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: color .2s;
+      position: relative;
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--dollarup-green);
+      transition: width .3s;
+      border-radius: 2px;
+    }
+    
+    .nav-links a:hover {
+      color: var(--dollarup-green-end);
+    }
+    
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all .3s cubic-bezier(.4, 0, .2, 1);
+      border: none;
+      white-space: nowrap;
+    }
+    
+    .btn-primary {
+      background: var(--dollarup-green);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(0, 217, 163, .25);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 217, 163, .35);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--dark-navy);
+      border: 2px solid rgba(26, 35, 50, .15);
+    }
+    
+    .btn-outline:hover {
+      border-color: var(--dollarup-green-end);
+      color: var(--dollarup-green-end);
+      background: var(--light-green);
+    }
+    
+    .btn-large {
+      padding: 18px 36px;
+      font-size: 17px;
+      font-weight: 800;
+    }
+    
+    /* HERO */
+    .hero {
+      background: linear-gradient(180deg, var(--white) 0%, var(--light-green) 100%);
+      position: relative;
+      overflow: hidden;
+      padding: 100px 0 80px;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(0, 217, 163, .08) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: float 20s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-50px, -50px); }
+    }
+    
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    h1 {
+      font-size: 56px;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      color: var(--dark-navy);
+    }
+    
+    .gradient-text {
+      background: var(--dollarup-green);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .hero p {
+      font-size: 20px;
+      color: var(--gray-medium);
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .hero-badges {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    
+    .hero-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: var(--gray-medium);
+    }
+    
+    .hero-badge::before {
+      content: '✓';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--dollarup-green);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    
+    .hero-visual {
+      position: relative;
+      background: var(--white);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid rgba(0, 0, 0, .05);
+    }
+    
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(26, 35, 50, .85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn .3s ease;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      animation: slideUp .4s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: var(--gray-medium);
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+    
+    .modal-close:hover {
+      background: var(--gray-light);
+      color: var(--dark-navy);
+    }
+    
+    .modal-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .modal-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--dollarup-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 20px rgba(0, 217, 163, .3);
+    }
+    
+    .modal-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+    
+    .modal-header h2 {
+      font-size: 28px;
+      color: var(--dark-navy);
+      margin-bottom: 12px;
+    }
+    
+    .modal-header p {
+      font-size: 16px;
+      color: var(--gray-medium);
+      line-height: 1.6;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--dark-navy);
+      margin-bottom: 8px;
+    }
+    
+    .form-group label .required {
+      color: var(--error);
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid rgba(0, 0, 0, .08);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--dark-navy);
+      background: var(--white);
+      transition: all .2s;
+    }
+    
+    .form-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid rgba(0, 0, 0, .08);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--dark-navy);
+      background: var(--white);
+      transition: all .2s;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 40px;
+    }
+    
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--dollarup-green-end);
+      box-shadow: 0 0 0 4px rgba(0, 217, 163, .1);
+    }
+    
+    .form-group select option {
+      padding: 12px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--dollarup-green-end);
+      box-shadow: 0 0 0 4px rgba(0, 217, 163, .1);
+    }
+    
+    .form-group input::placeholder {
+      color: var(--gray-medium);
+      opacity: .6;
+    }
+    
+    .form-group.error input {
+      border-color: var(--error);
+    }
+    
+    .error-message {
+      display: none;
+      font-size: 13px;
+      color: var(--error);
+      margin-top: 6px;
+      font-weight: 600;
+    }
+    
+    .form-group.error .error-message {
+      display: block;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 800;
+      margin-top: 8px;
+    }
+    
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .btn-loading {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .btn-text {
+      display: inline;
+    }
+    
+    .privacy-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--gray-medium);
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+    
+    .privacy-note a {
+      color: var(--dollarup-green-end);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .privacy-note a:hover {
+      text-decoration: underline;
+    }
+    
+    /* SUCCESS STATE */
+    .success-content {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    .success-content.active {
+      display: block;
+    }
+    
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--dollarup-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 12px 28px rgba(0, 217, 163, .35);
+      animation: scaleIn .5s ease;
+    }
+    
+    @keyframes scaleIn {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .success-content h3 {
+      font-size: 26px;
+      color: var(--dark-navy);
+      margin-bottom: 16px;
+    }
+    
+    .success-content p {
+      font-size: 16px;
+      color: var(--gray-medium);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    
+    .success-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--light-green);
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--dollarup-green-end);
+      margin-top: 20px;
+      border: 1px solid rgba(0, 217, 163, .2);
+    }
+    
+    /* STATS */
+    .stats {
+      background: var(--white);
+      padding: 60px 0;
+      border-top: 1px solid rgba(0, 0, 0, .06);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 40px;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 32px 24px;
+      background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
+      border-radius: 20px;
+      border: 1px solid rgba(0, 217, 163, .15);
+      transition: all .3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--dollarup-green-end);
+    }
+    
+    .stat-number {
+      font-size: 44px;
+      font-weight: 900;
+      background: var(--dollarup-green);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+    
+    .stat-label {
+      font-size: 15px;
+      color: var(--gray-medium);
+      font-weight: 600;
+    }
+    
+    /* SECTIONS */
+    section {
+      padding: 100px 0;
+    }
+    
+    h2 {
+      font-size: 44px;
+      font-weight: 800;
+      color: var(--dark-navy);
+      margin-bottom: 20px;
+      letter-spacing: -.01em;
+    }
+    
+    .section-intro {
+      font-size: 19px;
+      color: var(--gray-medium);
+      max-width: 700px;
+      margin-bottom: 60px;
+      line-height: 1.7;
+    }
+    
+    /* STEPS */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+    
+    .step-card {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 0, 0, .06);
+      transition: all .3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .step-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--dollarup-green);
+      transform: scaleX(0);
+      transition: transform .3s;
+    }
+    
+    .step-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--dollarup-green-end);
+    }
+    
+    .step-card:hover::before {
+      transform: scaleX(1);
+    }
+    
+    .step-number {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--dollarup-green);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0, 217, 163, .25);
+    }
+    
+    .step-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--dark-navy);
+      margin-bottom: 12px;
+    }
+    
+    .step-card p {
+      color: var(--gray-medium);
+      line-height: 1.7;
+    }
+    
+    /* CHART SECTION */
+    .chart-section {
+      background: linear-gradient(180deg, var(--white) 0%, var(--light-green) 100%);
+    }
+    
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: stretch;
+    }
+    
+    .panel {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(0, 0, 0, .05);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .panel-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--dark-navy);
+      margin-bottom: 28px;
+    }
+    
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
+      border: 1px solid rgba(0, 217, 163, .2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      flex-shrink: 0;
+    }
+    
+    #yieldChart {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .chart-legend {
+      display: flex;
+      gap: 28px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, .06);
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--gray-medium);
+      font-weight: 600;
+    }
+    
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+    }
+    
+    /* SIMULATOR */
+    .simulator {
+      background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
+      justify-content: space-between;
+    }
+    
+    .simulator > * {
+      flex-shrink: 0;
+    }
+    
+    label {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark-navy);
+      margin-bottom: 10px;
+    }
+    
+    .input-group {
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid rgba(0, 0, 0, .08);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--dark-navy);
+      background: var(--white);
+      transition: all .2s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--dollarup-green-end);
+      box-shadow: 0 0 0 4px rgba(0, 217, 163, .1);
+    }
+    
+    .progress-bar {
+      height: 12px;
+      background: rgba(0, 0, 0, .05);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 28px 0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--dollarup-green);
+      border-radius: 10px;
+      transition: width 1s cubic-bezier(.4, 0, .2, 1);
+      box-shadow: 0 0 8px rgba(0, 217, 163, .4);
+    }
+    
+    .result-card {
+      background: var(--white);
+      padding: 32px;
+      border-radius: 16px;
+      border: 2px solid rgba(0, 217, 163, .2);
+      margin: 28px 0;
+    }
+    
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .result-label {
+      font-size: 14px;
+      color: var(--gray-medium);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    
+    .result-value {
+      font-size: 40px;
+      font-weight: 900;
+      background: var(--dollarup-green);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    
+    .result-profit {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--success);
+    }
+    
+    .disclaimer {
+      font-size: 13px;
+      padding: 16px;
+      background: #FFF9E6;
+      border: 1px solid #FFE8A3;
+      border-radius: 12px;
+      color: #8B6914;
+      margin-top: 20px;
+    }
+    
+    /* COMPARATIVE TABLE */
+    .comparison-section {
+      margin-top: 28px;
+      padding: 32px;
+      background: linear-gradient(135deg, #F9FAFB 0%, #E8FFF9 100%);
+      border-radius: 16px;
+      border: 2px solid rgba(0, 217, 163, .15);
+      max-width: 100%;
+    }
+    
+    .comparison-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--dark-navy);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    
+    .comparison-table {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .comparison-card {
+      background: var(--white);
+      padding: 28px 20px;
+      border-radius: 12px;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: all .3s;
+    }
+    
+    .comparison-card.highlight {
+      background: linear-gradient(135deg, #E8FFF9 0%, #ffffff 100%);
+      border-color: var(--dollarup-green-end);
+      box-shadow: 0 4px 12px rgba(0, 217, 163, .2);
+    }
+    
+    .comparison-card-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--gray-medium);
+      margin-bottom: 12px;
+    }
+    
+    .comparison-card.highlight .comparison-card-label {
+      color: var(--dollarup-green-end);
+    }
+    
+    .comparison-card-value {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--dark-navy);
+      margin-bottom: 10px;
+    }
+    
+    .comparison-card.highlight .comparison-card-value {
+      background: var(--dollarup-green);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .comparison-card-apy {
+      font-size: 11px;
+      color: var(--gray-medium);
+      font-weight: 600;
+    }
+    
+    .comparison-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+      padding: 4px 12px;
+      background: var(--dollarup-green);
+      color: var(--white);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    
+    /* BENEFITS */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+    }
+    
+    .benefit-card {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 0, 0, .06);
+      transition: all .3s;
+    }
+    
+    .benefit-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--dollarup-green-end);
+    }
+    
+    .benefit-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      display: block;
+    }
+    
+    .benefit-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--dark-navy);
+      margin-bottom: 12px;
+    }
+    
+    .benefit-card p {
+      color: var(--gray-medium);
+      line-height: 1.7;
+    }
+    
+    /* CTA SECTION */
+    .cta-section {
+      background: var(--dollarup-green);
+      color: var(--white);
+      text-align: center;
+      border-radius: 32px;
+      padding: 80px 40px;
+      margin: 100px 0;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -25%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 255, 255, .15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    
+    .cta-section h2 {
+      color: var(--white);
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .cta-section p {
+      font-size: 20px;
+      opacity: .95;
+      margin-bottom: 36px;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .cta-section .btn {
+      background: var(--white);
+      color: var(--dollarup-green-end);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .15);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .cta-section .btn:hover {
+      background: var(--light-green);
+    }
+    
+    .cta-badges {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      font-size: 15px;
+      opacity: .9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* FOOTER */
+    footer {
+      background: var(--dark-navy);
+      color: rgba(255, 255, 255, .7);
+      padding: 60px 0 32px;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 48px;
+    }
+    
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .footer-brand svg {
+      width: 36px;
+      height: 36px;
+    }
+    
+    .footer-brand span {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--white);
+    }
+    
+    .footer-desc {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, .6);
+    }
+    
+    .footer-section h4 {
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, .6);
+      text-decoration: none;
+      font-size: 15px;
+      transition: color .2s;
+    }
+    
+    .footer-links a:hover {
+      color: var(--dollarup-green-start);
+    }
+    
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255, 255, 255, .1);
+      font-size: 14px;
+    }
+    
+    .footer-legal {
+      display: flex;
+      gap: 24px;
+    }
+    
+    /* SECURITY SECTION */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    
+    details {
+      background: var(--white);
+      border: 1px solid rgba(0, 0, 0, .06);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all .3s;
+    }
+    
+    details:hover {
+      box-shadow: var(--shadow);
+      border-color: rgba(0, 217, 163, .3);
+    }
+    
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+      color: var(--dark-navy);
+    }
+    
+    summary::before {
+      content: '›';
+      font-size: 24px;
+      transition: transform .3s;
+      color: var(--dollarup-green-end);
+      flex-shrink: 0;
+    }
+    
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    
+    details[open] {
+      border-color: var(--dollarup-green-end);
+      box-shadow: 0 4px 12px rgba(0, 217, 163, .15);
+    }
+    
+    details ul {
+      margin: 16px 0 0 32px;
+      line-height: 1.8;
+    }
+    
+    details li {
+      margin: 8px 0;
+      color: var(--gray-medium);
+    }
+    
+    details li strong {
+      color: var(--dark-navy);
+    }
+    
+    /* FAQ SECTION */
+    .faq {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+    }
+    
+    .faq details {
+      background: linear-gradient(135deg, var(--light-green) 0%, var(--white) 100%);
+    }
+    
+    .faq details p {
+      margin-top: 16px;
+      color: var(--gray-medium);
+      line-height: 1.7;
+    }
+    
+    /* TRUSTED BY SECTION */
+    .trusted-section {
+      text-align: center;
+      background: var(--light-green);
+    }
+    
+    .trusted-section .section-intro {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .trusted-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+    
+    .trusted-card {
+      background: var(--white);
+      border: 2px solid rgba(0, 217, 163, .2);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: left;
+      transition: all .3s;
+      box-shadow: var(--shadow);
+    }
+    
+    .trusted-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--dollarup-green-end);
+    }
+    
+    .trusted-logo {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--dark-navy);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .trusted-logo::before {
+      content: '✓';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: var(--dollarup-green);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    
+    .trusted-card p {
+      color: var(--gray-medium);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+    
+    /* MOBILE */
+    @media (max-width: 980px) {
+      h1 { font-size: 38px; }
+      h2 { font-size: 32px; }
+      .hero-content, .chart-grid, .footer-content, .security-grid, .faq, .trusted-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      section { padding: 60px 0; }
+      .hero { padding: 60px 0 40px; }
+      .cta-section { padding: 60px 32px; }
+      .modal-content { padding: 32px 24px; }
+      .comparison-table { grid-template-columns: 1fr; gap: 12px; }
+      .comparison-card-value { font-size: 28px; }
+      .comparison-section { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#" aria-label="DollarUp - Página inicial">
+        <svg width="40" height="40" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#00D9A3;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#00B386;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="90" fill="url(#bgGradient)"/>
+          <path d="M 100 50 C 120 50, 130 60, 130 75 C 130 85, 125 90, 115 92 L 85 98 C 75 100, 70 105, 70 115 C 70 125, 80 135, 100 135" 
+                stroke="white" stroke-width="12" fill="none" stroke-linecap="round"/>
+          <line x1="100" y1="40" x2="100" y2="60" stroke="white" stroke-width="12" stroke-linecap="round"/>
+          <line x1="100" y1="125" x2="100" y2="145" stroke="white" stroke-width="12" stroke-linecap="round"/>
+          <path d="M 100 25 L 85 45 M 100 25 L 115 45" stroke="white" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>DollarUp</span>
+      </a>
+      <nav class="nav-links" aria-label="Navegação principal">
+        <a href="#como-funciona">Como Funciona</a>
+        <a href="#rendimentos">Rendimentos</a>
+        <a href="#beneficios">Benefícios</a>
+        <a href="#seguranca">Segurança</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div>
+        <button class="btn btn-primary" onclick="openModal()">Quero Testar 🚀</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MODAL DE INTERESSE -->
+  <div id="leadModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()" aria-label="Fechar">&times;</button>
+      
+      <!-- FORMULÁRIO -->
+      <div id="formContainer">
+        <div class="modal-header">
+           <h3>Quero Testar a <span class="gradient-text">DollarUp</span>!</h3>
+        </div>
+       <form id="leadForm" onsubmit="submitForm(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">
+                Primeiro Nome <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="firstName" 
+                name="firstName" 
+                placeholder="Ex: João" 
+                required
+              />
+              <span class="error-message">Por favor, preencha seu primeiro nome</span>
+            </div>
+            
+            <div class="form-group">
+              <label for="lastName">
+                Sobrenome <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="lastName" 
+                name="lastName" 
+                placeholder="Ex: Silva" 
+                required
+              />
+              <span class="error-message">Por favor, preencha seu sobrenome</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">
+              E-mail <span class="required">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder="seu@email.com" 
+              required
+            />
+            <span class="error-message">Por favor, insira um e-mail válido</span>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="birthMonth">
+                Mês de Nascimento <span class="required">*</span>
+              </label>
+              <select id="birthMonth" name="birthMonth" required>
+                <option value="">Selecione o mês</option>
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+                <option value="05">Maio</option>
+                <option value="06">Junho</option>
+                <option value="07">Julho</option>
+                <option value="08">Agosto</option>
+                <option value="09">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+              </select>
+              <span class="error-message">Por favor, selecione o mês</span>
+            </div>
+            
+            <div class="form-group">
+              <label for="birthYear">
+                Ano de Nascimento <span class="required">*</span>
+              </label>
+              <select id="birthYear" name="birthYear" required>
+                <option value="">Selecione o ano</option>
+              </select>
+              <span class="error-message">Por favor, selecione o ano</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="experience">
+              Há quanto tempo investe? <span class="required">*</span>
+            </label>
+            <select id="experience" name="experience" required>
+              <option value="">Selecione</option>
+              <option value="Iniciando">Iniciando</option>
+              <option value="Cerca de 1 ano">Cerca de 1 ano</option>
+              <option value="Entre 2 e 3 anos">Entre 2 e 3 anos</option>
+              <option value="Mais de 3 anos">Mais de 3 anos</option>
+            </select>
+            <span class="error-message">Por favor, selecione uma opção</span>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-submit">
+            <span class="btn-text">Confirmar Interesse →</span>
+            <span class="btn-loading"></span>
+          </button>
+          
+          <p class="privacy-note">
+            Ao enviar, você concorda com nossa <a href="#privacidade">Política de Privacidade</a>. 
+            Seus dados estão seguros e não serão compartilhados.
+          </p>
+        </form>
+      </div>
+      
+      <!-- MENSAGEM DE SUCESSO -->
+      <div id="successContainer" class="success-content">
+        <div class="success-icon">
+          <svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+          </svg>
+        </div>
+        <h3>Bem-vindo à lista! 🎉</h3>
+        <p>
+          <strong id="userName"></strong>, obrigado pelo interesse!
+        </p>
+        <p>
+          Você entrou na nossa lista de acesso antecipado. 
+          Em breve entraremos em contato via e-mail com mais detalhes.
+        </p>
+        <div class="success-badge">
+          ✓ Você está na lista de espera
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div>
+          <h1>
+            Invista em dólar e ganhe <span class="gradient-text">rendimentos automáticos</span>
+          </h1>
+          <p>
+           Proteja seu patrimônio investindo em moeda forte. Rendimentos de até <strong>12% ao ano</strong>, com aporte direto via Pix ou em dólar digital (USDC/USDT), sem necessidade de conta no exterior.
+          </p>
+          <div class="cta-buttons">
+            <button class="btn btn-primary btn-large" onclick="openModal()">Quero Testar 🚀</button>
+            <a class="btn btn-outline btn-large" href="#rendimentos">Simular Investimento</a>
+          </div>
+          <div class="hero-badges">
+            <span class="hero-badge">Rendimento em dólar</span>
+            <span class="hero-badge">Sem burocracia</span>
+            <span class="hero-badge">Saque 24/7</span>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div style="background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px -5px rgba(0,0,0,.12); border: 1px solid rgba(0,0,0,.06);">
+            <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--dark-navy);">💰 Potencial de Rendimento</h3>
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 14px; color: var(--gray-medium); margin-bottom: 6px; font-weight: 600;">APY Médio DollarUp</div>
+              <div style="font-size: 36px; font-weight: 900; background: var(--dollarup-green); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">12% a.a.</div>
+            </div>
+            <div>
+              <div style="font-size: 14px; color: var(--gray-medium); margin-bottom: 6px; font-weight: 600;">vs. Poupança (6% a.a.)</div>
+              <div style="font-size: 36px; font-weight: 900; background: var(--dollarup-green); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">+100%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); max-width: 900px; margin: 0 auto;">
+        <div class="stat-card">
+          <div class="stat-number">12%</div>
+          <div class="stat-label">Rendimento anual médio</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Disponibilidade de saque</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">0%</div>
+          <div class="stat-label">Taxa de administração</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section id="como-funciona">
+    <div class="container">
+      <h2>Como Funciona</h2>
+      <p class="section-intro">
+        Investir em dólar nunca foi tão simples. Veja como funciona em 3 passos:
+      </p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Deposite via PIX</h3>
+          <p>
+            Transfira Reais da sua conta bancária ou dólar digital (USDC/USDT). O valor é creditado instantaneamente na plataforma.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Conversão Automática</h3>
+          <p>
+            Seus reais são convertidos para USDT (dólar digital) automaticamente com as melhores taxas do mercado.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Ganhe Rendimentos</h3>
+          <p>
+            Seu saldo em dólar começa a render automaticamente através de protocolos DeFi auditados. Você recebe 90% dos rendimentos.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RENDIMENTOS -->
+  <section id="rendimentos" class="chart-section">
+    <div class="container">
+      <h2>Simule o seu potencial de ganhos</h2>
+      <p class="section-intro">
+        Veja quanto você pode ganhar investindo na DollarUp comparado com outras opções do mercado.
+      </p>
+      <div class="chart-grid">
+        <div class="panel">
+          <div class="panel-title">Evolução do seu Investimento (12 meses)</div>
+          <div class="chart-container">
+            <canvas id="yieldChart"></canvas>
+          </div>
+          <p style="margin-top:auto; padding-top:20px; font-size:14px; color:var(--gray-medium); line-height:1.6;">
+            <strong>Comparação visual:</strong> DollarUp, Poupança e Renda Fixa. Valores históricos não garantem rendimentos futuros.
+          </p>
+        </div>
+        
+        <div class="panel simulator">
+          <div class="panel-title">Simule seus Ganhos</div>
+          
+          <label for="valor">Valor do Investimento</label>
+          <div class="input-group">
+            <input id="valor" type="number" value="10000" min="100" step="100" />
+            <select id="moeda">
+              <option value="BRL">R$</option>
+              <option value="USD">US$</option>
+            </select>
+          </div>
+          
+          <label for="prazo">Período</label>
+          <div class="input-group">
+            <input id="prazo" type="number" value="12" min="1" max="60" />
+            <select id="unidade">
+              <option value="meses">meses</option>
+              <option value="anos">anos</option>
+            </select>
+          </div>
+          
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+          </div>
+          
+          <div class="result-card">
+            <div class="result-row">
+              <div>
+                <div class="result-label">Valor Final Estimado</div>
+                <div class="result-value" id="estimativa">US$ 2.120</div>
+              </div>
+            </div>
+            <div class="result-row">
+              <div class="result-label">Lucro DollarUp</div>
+              <div class="result-profit" id="lucro">US$ 120</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal()" style="width:100%; justify-content:center;">Quero Testar 🚀</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SEÇÃO COMPARATIVA - ABAIXO DO GRID -->
+      <div class="comparison-section" style="margin-top: 40px;">
+        <div class="comparison-title">💰 Compare seu Rendimento</div>
+        <div class="comparison-table">
+          <div class="comparison-card highlight">
+            <div class="comparison-card-label">🚀 DollarUp</div>
+            <div class="comparison-card-value" id="compareDollarup">US$ 0</div>
+            <div class="comparison-card-apy">Rendimento: 12% a.a.</div>
+            <div class="comparison-badge">✨ MELHOR</div>
+          </div>
+          <div class="comparison-card">
+            <div class="comparison-card-label">📊 Renda Fixa</div>
+            <div class="comparison-card-value" id="compareRendaFixa">US$ 0</div>
+            <div class="comparison-card-apy">Rendimento: 8% a.a.</div>
+          </div>
+          <div class="comparison-card">
+            <div class="comparison-card-label">🏦 Poupança</div>
+            <div class="comparison-card-value" id="comparePoupanca">US$ 0</div>
+            <div class="comparison-card-apy">Rendimento: 6% a.a.</div>
+          </div>
+        </div>
+        
+        <div class="disclaimer" style="margin-top: 24px; margin-bottom: 0;">
+          <strong>⚠️ Aviso:</strong> Valores ilustrativos baseados em APY médio de 12% a.a. Rendimentos passados não garantem resultados futuros.
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- BENEFÍCIOS -->
+  <section id="beneficios">
+    <div class="container">
+      <h2>Por que escolher a DollarUp?</h2>
+      <p class="section-intro">
+        Unimos tecnologia de ponta com simplicidade para democratizar o acesso a investimentos em dólar.
+      </p>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <span class="benefit-icon">💵</span>
+          <h3>Rendimentos em Dólar</h3>
+          <p>Seu dinheiro trabalha para você, gerando até 12% ao ano em moeda forte, protegido da inflação do real.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">🌎</span>
+          <h3>Sem Conta no Exterior</h3>
+          <p>Invista e ganhe em dólar sem burocracia internacional. Tudo 100% online e em português.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">⚡</span>
+          <h3>Simplicidade Total</h3>
+          <p>Interface intuitiva como apps de banco digital. Deposite via PIX ou dólar digital (USDC/USDT)e comece a render em minutos.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">📱</span>
+          <h3>Acessível para Todos</h3>
+          <p>Comece com valores acessíveis. Não é necessário conhecimento técnico em cripto ou DeFi.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">⏱️</span>
+          <h3>Liquidez Imediata</h3>
+          <p>Saque quando quiser, 24 horas por dia, 7 dias por semana. Seu dinheiro sempre disponível.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">💎</span>
+          <h3>Taxas Transparentes</h3>
+          <p>Sem pegadinhas. Taxa de 0,5% no depósito + 10% sobre rendimentos. Você fica com 90% dos ganhos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEGURANÇA -->
+  <section id="seguranca">
+    <div class="container">
+      <h2>Segurança em Primeiro Lugar</h2>
+      <p class="section-intro">
+        Sua tranquilidade é nossa prioridade. Utilizamos as mesmas tecnologias de segurança das maiores instituições financeiras globais.
+      </p>
+      <div class="security-grid">
+        <details>
+          <summary>🔗 <strong>Blockchain & DeFi</strong></summary>
+          <ul>
+            <li><strong>Transparência total:</strong> Todas as transações são públicas e auditáveis na blockchain, mas ocultando totalmente as suas informações pessoais. O ID das transações é público, mas as informações dos usuários são 100% privadas</li>
+            <li><strong>Imutabilidade:</strong> Registros permanentes que não podem ser alterados</li>
+            <li><strong>Contratos auditados:</strong> Protocolos verificados por empresas especializadas</li>
+            <li><strong>Descentralização:</strong> Sem ponto único de falha</li>
+          </ul>
+        </details>
+        
+        <details>
+          <summary>🛡️ <strong>Proteção com Fireblocks</strong></summary>
+          <ul>
+            <li><strong>MPC Technology:</strong> Computação multi-party elimina risco de chaves privadas</li>
+            <li><strong>Custódia institucional:</strong> Mesma tecnologia usada por bancos globais</li>
+            <li><strong>Certificações:</strong> SOC 2, ISO 27001, conformidade regulatória</li>
+            <li><strong>Seguro:</strong> Cobertura contra eventos extraordinários</li>
+          </ul>
+        </details>
+        
+        <details>
+          <summary>🔐 <strong>Segurança de Dados</strong></summary>
+          <ul>
+            <li><strong>Criptografia AES-256:</strong> Padrão militar para dados em repouso</li>
+            <li><strong>TLS 1.3:</strong> Comunicação criptografada de ponta a ponta</li>
+            <li><strong>2FA obrigatório:</strong> Autenticação de dois fatores para todas as contas</li>
+            <li><strong>Monitoramento 24/7:</strong> Sistema de detecção de anomalias em tempo real</li>
+          </ul>
+        </details>
+        
+        <details>
+          <summary>✅ <strong>Conformidade & Regulação</strong></summary>
+          <ul>
+            <li><strong>Licença FIZ Geórgia:</strong> Autorização completa para serviços cripto</li>
+            <li><strong>KYC/AML:</strong> Verificação de identidade e prevenção à lavagem de dinheiro</li>
+            <li><strong>LGPD:</strong> Conformidade com Lei Geral de Proteção de Dados</li>
+            <li><strong>Auditorias regulares:</strong> Revisões independentes de segurança e processos</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="background: var(--white);">
+    <div class="container">
+      <h2>Perguntas Frequentes</h2>
+      <div class="faq">
+        <details>
+          <summary>Preciso ter conta no exterior?</summary>
+          <p>Não! Você deposita em reais via PIX e nós fazemos toda a conversão automaticamente para USDT (dólar digital). Tudo é feito pela plataforma de forma transparente.</p>
+        </details>
+        
+        <details>
+          <summary>Como funcionam os rendimentos?</summary>
+          <p>Seu USDT é alocado em protocolos DeFi de digital assests auditados  que geram rendimentos através de empréstimos descentralizados. Você recebe 90% dos rendimentos gerados, e eles são creditados automaticamente na sua conta.</p>
+        </details>
+        
+        <details>
+          <summary>Posso sacar quando quiser?</summary>
+          <p>Sim, totalmente! A plataforma tem liquidez 24/7. Você solicita o saque, convertemos automaticamente de USDT para BRL e enviamos via PIX. Geralmente o processo leva poucos minutos.</p>
+        </details>
+        
+        <details>
+          <summary>Qual o valor mínimo para investir?</summary>
+          <p>O investimento mínimo varia conforme nossos parceiros de rampa de entrada, mas você pode começar com valores acessíveis a partir de R$ 100. Não há barreiras de entrada.</p>
+        </details>
+        
+        <details>
+          <summary>A DollarUp é segura?</summary>
+          <p>Sim. Utilizamos Fireblocks para custódia (mesma tecnologia de grandes bancos), protocolos DeFi auditados, criptografia de ponta, 2FA obrigatório e possuímos licença cripto na FIZ Geórgia. Sua segurança é nossa prioridade máxima.</p>
+        </details>
+        
+        <details>
+          <summary>Quais são as taxas cobradas?</summary>
+          <p>Cobramos 0,5% no depósito e 10% sobre os rendimentos gerados (você fica com 90%). Não há taxas de administração mensais, nem taxas escondidas. Tudo é transparente.</p>
+        </details>
+        
+        <details>
+          <summary>Os rendimentos são garantidos?</summary>
+          <p>Os rendimentos variam conforme as taxas dos protocolos DeFi (geralmente entre 8% e 15% ao ano). Apresentamos o APY médio de 12% baseado em dados históricos, mas não podemos garantir valores fixos, pois dependem das condições de mercado.</p>
+        </details>
+        
+        <details>
+          <summary>Preciso declarar no Imposto de Renda?</summary>
+          <p>Sim. Investimentos em criptomoedas devem ser declarados no IR. Fornecemos relatórios completos para facilitar sua declaração. Recomendamos consultar um contador para sua situação específica.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUSTED BY -->
+  <section class="trusted-section">
+    <div class="container">
+      <h2>Seu dinheiro protegido por tecnologia institucional</h2>
+      <p class="section-intro">
+        Parceiros de confiança que garantem a segurança e conformidade da DollarUp
+      </p>
+      
+      <div class="trusted-grid">
+        <div class="trusted-card">
+          <div class="trusted-logo">Chainalysis</div>
+          <p>
+            A Chainalysis fornece tecnologia e conhecimento especializado para ajudar empresas de cripto e instituições financeiras a gerenciar riscos, rastrear atividades ilícitas e desenvolver produtos inovadores da web3.
+          </p>
+        </div>
+        
+        <div class="trusted-card">
+          <div class="trusted-logo">Fireblocks</div>
+          <p>
+            Uma plataforma de segurança de ativos digitais israelense que ajuda instituições financeiras a protegerem seus ativos contra roubo ou hackers, utilizando tecnologia inovadora de MPC e isolamento de chip com patente pendente para proteger chaves privadas, credenciais de API e eliminar a necessidade de endereços de depósito.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section>
+    <div class="container">
+      <div class="cta-section">
+        <h2>Seja um dos Primeiros a Testar</h2>
+        <p>
+          Cadastre-se agora e tenha acesso antecipado à plataforma. Vagas limitadas para os early adopters.
+        </p>
+        <button class="btn btn-large" onclick="openModal()" style="font-size:18px; padding:20px 48px;">
+          Quero Testar Agora 🚀
+        </button>
+        <div class="cta-badges">
+          <span>✓ Sem compromisso</span>
+          <span>✓ Acesso antecipado</span>
+          <span>✓ Suporte dedicado</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div>
+          <div class="footer-brand">
+            <svg width="36" height="36" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="footerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#00D9A3;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#00B386;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="100" r="90" fill="url(#footerGrad)"/>
+              <path d="M 100 50 C 120 50, 130 60, 130 75 C 130 85, 125 90, 115 92 L 85 98 C 75 100, 70 105, 70 115 C 70 125, 80 135, 100 135" 
+                    stroke="white" stroke-width="12" fill="none" stroke-linecap="round"/>
+              <line x1="100" y1="40" x2="100" y2="60" stroke="white" stroke-width="12" stroke-linecap="round"/>
+              <line x1="100" y1="125" x2="100" y2="145" stroke="white" stroke-width="12" stroke-linecap="round"/>
+              <path d="M 100 25 L 85 45 M 100 25 L 115 45" stroke="white" stroke-width="10" fill="none" stroke-linecap="round"/>
+            </svg>
+            <span>DollarUp</span>
+          </div>
+          <p class="footer-desc">
+            Democratizando o acesso a investimentos em dólar para todos os brasileiros.
+          </p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Produto</h4>
+          <div class="footer-links">
+            <a href="#como-funciona">Como Funciona</a>
+            <a href="#rendimentos">Rendimentos</a>
+            <a href="#beneficios">Benefícios</a>
+            <a href="#seguranca">Segurança</a>
+            <a href="#faq">FAQ</a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Empresa</h4>
+          <div class="footer-links">
+            <a href="#sobre">Sobre Nós</a>
+            <a href="#contato">Contato</a>
+            <a href="#blog">Blog</a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <div class="footer-links">
+            <a href="#termos">Termos de Uso</a>
+            <a href="#privacidade">Política de Privacidade</a>
+            <a href="#licencas">Licenças</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> DollarUp. Todos os direitos reservados.</div>
+        <div class="footer-legal">
+          <span>FIZ Kutaisi, Geórgia</span>
+          <span>•</span>
+          <span>Licença Cripto Completa</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+    // ========================================
+    // CONFIGURAÇÃO BREVO (EDITE AQUI!)
+    // ========================================
+    // ========================================
+    // 🔧 CONFIGURAÇÃO BREVO - INSTRUÇÕES
+    // ========================================
+    // 1. Obtenha sua API Key em: https://app.brevo.com/settings/keys/api
+    // 2. Verifique seu email em: https://app.brevo.com/senders
+    // 3. Crie uma lista em: https://app.brevo.com/contacts/lists (anote o ID)
+    // 4. Crie um template em: https://app.brevo.com/camp/template/listing (anote o ID)
+    // 5. Substitua os valores abaixo pelos seus dados reais
+    
+    const BREVO_CONFIG = {
+      apiKey: 'xkeysib-SUA_API_KEY_AQUI',  // ← Cole sua API Key aqui
+      listId: 2,                            // ← ID da sua lista de contatos
+      templateId: 1,                        // ← ID do template de email
+      senderEmail: 'contato@dollarup.io',  // ← Email verificado no Brevo
+      senderName: 'DollarUp'
+    };
+    
+    // ========================================
+    // 🐛 MODO DEBUG - Ativar logs detalhados
+    // ========================================
+    const DEBUG_MODE = true; // Mude para false em produção
+    
+    function debugLog(emoji, title, data = null) {
+      if (!DEBUG_MODE) return;
+      
+      console.log(`\n${emoji} ========== ${title} ==========`);
+      if (data) {
+        console.log(data);
+      }
+      console.log('='.repeat(50));
+    }
+    
+    // MODAL
+    function openModal() {
+      document.getElementById('leadModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal() {
+      document.getElementById('leadModal').classList.remove('active');
+      document.body.style.overflow = 'auto';
+      // Reset form after 1 second
+      setTimeout(() => {
+        document.getElementById('formContainer').style.display = 'block';
+        document.getElementById('successContainer').classList.remove('active');
+        document.getElementById('leadForm').reset();
+      }, 300);
+    }
+    
+    // Close on ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+    
+    // Close on backdrop click
+    document.getElementById('leadModal').addEventListener('click', (e) => {
+      if (e.target.id === 'leadModal') closeModal();
+    });
+    
+    // POPULAR SELECT DE ANOS (1940 até ano atual)
+    function populateYearSelect() {
+      const yearSelect = document.getElementById('birthYear');
+      const currentYear = new Date().getFullYear();
+      const startYear = 1940;
+      
+      for (let year = currentYear; year >= startYear; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      }
+    }
+    
+    // Chamar função ao carregar a página
+    populateYearSelect();
+    
+    // FORM SUBMISSION COM INTEGRAÇÃO BREVO E DEBUG COMPLETO
+    async function submitForm(event) {
+      event.preventDefault();
+      
+      debugLog('🚀', 'INÍCIO DO PROCESSO DE ENVIO');
+      
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const birthMonth = document.getElementById('birthMonth').value;
+      const birthYear = document.getElementById('birthYear').value;
+      const experience = document.getElementById('experience').value;
+      
+      debugLog('📝', 'DADOS DO FORMULÁRIO', {
+        firstName,
+        lastName,
+        email,
+        birthMonth,
+        birthYear,
+        experience
+      });
+      
+      // Validation
+      let valid = true;
+      
+      // Validar todos os campos
+      const fields = [
+        { id: 'firstName', value: firstName },
+        { id: 'lastName', value: lastName },
+        { id: 'email', value: email, emailCheck: true },
+        { id: 'birthMonth', value: birthMonth },
+        { id: 'birthYear', value: birthYear },
+        { id: 'experience', value: experience }
+      ];
+      
+      fields.forEach(field => {
+        const element = document.querySelector(`#${field.id}`);
+        const formGroup = element.closest('.form-group');
+        
+        if (!field.value || (field.emailCheck && !field.value.includes('@'))) {
+          formGroup.classList.add('error');
+          valid = false;
+        } else {
+          formGroup.classList.remove('error');
+        }
+      });
+      
+      if (!valid) {
+        debugLog('❌', 'VALIDAÇÃO FALHOU - Campos inválidos');
+        return;
+      }
+      
+      debugLog('✅', 'VALIDAÇÃO OK - Todos os campos preenchidos corretamente');
+      
+      // Verificar se Brevo está configurado
+      const isBrevoConfigured = BREVO_CONFIG.apiKey !== 'xkeysib-SUA_API_KEY_AQUI' && 
+                                BREVO_CONFIG.apiKey.startsWith('xkeysib-');
+      
+      debugLog('🔧', 'VERIFICAÇÃO DA CONFIGURAÇÃO BREVO', {
+        'API Key configurada': isBrevoConfigured ? 'SIM ✅' : 'NÃO ❌',
+        'API Key (primeiros 20 chars)': BREVO_CONFIG.apiKey.substring(0, 20) + '...',
+        'Sender Email': BREVO_CONFIG.senderEmail,
+        'Sender Name': BREVO_CONFIG.senderName,
+        'List ID': BREVO_CONFIG.listId,
+        'Template ID': BREVO_CONFIG.templateId
+      });
+      
+      // Disable button and show loading
+      const submitBtn = document.querySelector('.btn-submit');
+      const btnText = submitBtn.querySelector('.btn-text');
+      const btnLoading = submitBtn.querySelector('.btn-loading');
+      
+      submitBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline-block';
+      
+      // MODO DE TESTE: Se Brevo não configurado, salvar localmente
+      if (!isBrevoConfigured) {
+        debugLog('⚠️', 'MODO DE TESTE ATIVADO - Brevo não configurado');
+        debugLog('💾', 'Salvando lead localmente (localStorage)');
+        
+        // Salvar no localStorage para teste
+        const leads = JSON.parse(localStorage.getItem('dollarup_leads') || '[]');
+        leads.push({
+          firstName,
+          lastName,
+          email,
+          birthMonth,
+          birthYear,
+          experience,
+          timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('dollarup_leads', JSON.stringify(leads));
+        
+        debugLog('✅', 'Lead salvo com sucesso no localStorage', {
+          'Total de leads': leads.length,
+          'Último lead': leads[leads.length - 1]
+        });
+        
+        console.log('\n💡 PARA ATIVAR O BREVO:');
+        console.log('1. Acesse: https://app.brevo.com/settings/keys/api');
+        console.log('2. Gere uma API Key');
+        console.log('3. Substitua no código: BREVO_CONFIG.apiKey');
+        console.log('4. Verifique o email remetente no Brevo\n');
+        
+        // Simular delay de API
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Show success message
+        document.getElementById('userName').textContent = firstName;
+        document.getElementById('formContainer').style.display = 'none';
+        document.getElementById('successContainer').classList.add('active');
+        
+        // Reset button state
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+        
+        // Auto-close after 5 seconds
+        setTimeout(() => {
+          closeModal();
+        }, 5000);
+        
+        return;
+      }
+      
+      // MODO PRODUÇÃO: Integração com Brevo
+      debugLog('🚀', 'MODO PRODUÇÃO - Iniciando integração com Brevo');
+      
+      try {
+        // ========================================
+        // ETAPA 1: ADICIONAR CONTATO
+        // ========================================
+        debugLog('📤', 'ETAPA 1/2: Enviando contato para Brevo');
+        
+        const contactData = {
+          email: email,
+          attributes: {
+            FIRSTNAME: firstName,
+            LASTNAME: lastName,
+            BIRTH_MONTH: birthMonth,
+            BIRTH_YEAR: birthYear,
+            EXPERIENCE: experience
+          },
+          listIds: [BREVO_CONFIG.listId],
+          updateEnabled: true
+        };
+        
+        debugLog('📦', 'Dados que serão enviados (contato)', contactData);
+        
+        const contactResponse = await fetch('https://api.brevo.com/v3/contacts', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'api-key': BREVO_CONFIG.apiKey,
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(contactData)
+        });
+        
+        debugLog('📡', 'Resposta do Brevo (Contato)', {
+          'Status HTTP': contactResponse.status,
+          'Status Text': contactResponse.statusText,
+          'OK?': contactResponse.ok ? 'SIM ✅' : 'NÃO ❌'
+        });
+        
+        // Ler resposta completa
+        let contactResponseData;
+        const contactResponseText = await contactResponse.text();
+        try {
+          contactResponseData = JSON.parse(contactResponseText);
+        } catch {
+          contactResponseData = contactResponseText;
+        }
+        
+        debugLog('📄', 'Corpo da resposta (Contato)', contactResponseData);
+        
+        // Verificar se deu erro (exceto 400 que pode ser contato duplicado)
+        if (!contactResponse.ok && contactResponse.status !== 400) {
+          const errorMsg = contactResponseData.message || contactResponseData.code || 'Erro desconhecido';
+          throw new Error(`❌ Erro ao adicionar contato: ${errorMsg} (HTTP ${contactResponse.status})`);
+        }
+        
+        if (contactResponse.status === 400) {
+          debugLog('ℹ️', 'Contato já existe no Brevo (código 400) - Isso é normal, continuando...');
+        } else {
+          debugLog('✅', 'Contato adicionado com sucesso!');
+        }
+        
+        // ========================================
+        // ETAPA 2: ENVIAR EMAIL
+        // ========================================
+        debugLog('📤', 'ETAPA 2/2: Enviando email de boas-vindas');
+        
+        const emailData = {
+          sender: {
+            name: BREVO_CONFIG.senderName,
+            email: BREVO_CONFIG.senderEmail
+          },
+          to: [{
+            email: email,
+            name: `${firstName} ${lastName}`
+          }],
+          templateId: BREVO_CONFIG.templateId,
+          params: {
+            FIRSTNAME: firstName,
+            LASTNAME: lastName,
+            BIRTH_MONTH: birthMonth,
+            BIRTH_YEAR: birthYear,
+            EXPERIENCE: experience
+          }
+        };
+        
+        debugLog('📦', 'Dados que serão enviados (email)', emailData);
+        
+        const emailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'api-key': BREVO_CONFIG.apiKey,
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(emailData)
+        });
+        
+        debugLog('📡', 'Resposta do Brevo (Email)', {
+          'Status HTTP': emailResponse.status,
+          'Status Text': emailResponse.statusText,
+          'OK?': emailResponse.ok ? 'SIM ✅' : 'NÃO ❌'
+        });
+        
+        // Ler resposta completa
+        let emailResponseData;
+        const emailResponseText = await emailResponse.text();
+        try {
+          emailResponseData = JSON.parse(emailResponseText);
+        } catch {
+          emailResponseData = emailResponseText;
+        }
+        
+        debugLog('📄', 'Corpo da resposta (Email)', emailResponseData);
+        
+        if (!emailResponse.ok) {
+          const errorMsg = emailResponseData.message || emailResponseData.code || 'Erro desconhecido';
+          throw new Error(`❌ Erro ao enviar email: ${errorMsg} (HTTP ${emailResponse.status})`);
+        }
+        
+        debugLog('✅', 'Email enviado com sucesso!', {
+          'Message ID': emailResponseData.messageId
+        });
+        
+        // ========================================
+        // SUCESSO COMPLETO
+        // ========================================
+        debugLog('🎉', 'PROCESSO CONCLUÍDO COM SUCESSO!');
+        
+        // Show success message
+        document.getElementById('userName').textContent = firstName;
+        document.getElementById('formContainer').style.display = 'none';
+        document.getElementById('successContainer').classList.add('active');
+        
+        // Reset button state
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+        
+        // Optional: Auto-close after 5 seconds
+        setTimeout(() => {
+          closeModal();
+        }, 5000);
+        
+      } catch (error) {
+        debugLog('❌', 'ERRO NO PROCESSO', {
+          'Mensagem': error.message,
+          'Stack': error.stack
+        });
+        
+        console.error('\n🔴 ERRO COMPLETO:', error);
+        
+        // Mensagens de erro mais amigáveis e específicas
+        let userMessage = '❌ Erro ao processar seu cadastro.\n\n';
+        
+        if (error.message.includes('API key') || error.message.includes('401')) {
+          userMessage += '🔑 Problema com a chave de API.\n';
+          userMessage += 'Verifique se a API Key do Brevo está correta e ativa.\n';
+          userMessage += `\nStatus: ${error.message}`;
+        } else if (error.message.includes('template') || error.message.includes('404')) {
+          userMessage += '📧 Problema com o template de email.\n';
+          userMessage += 'Verifique se o Template ID existe no Brevo.\n';
+          userMessage += `\nTemplate ID configurado: ${BREVO_CONFIG.templateId}`;
+        } else if (error.message.includes('sender') || error.message.includes('forbidden')) {
+          userMessage += '✉️ Problema com o email remetente.\n';
+          userMessage += 'Verifique se o email está verificado no Brevo.\n';
+          userMessage += `\nEmail configurado: ${BREVO_CONFIG.senderEmail}`;
+        } else if (error.message.includes('list')) {
+          userMessage += '📋 Problema com a lista de contatos.\n';
+          userMessage += 'Verifique se o List ID existe no Brevo.\n';
+          userMessage += `\nList ID configurado: ${BREVO_CONFIG.listId}`;
+        } else {
+          userMessage += `Detalhes: ${error.message}`;
+        }
+        
+        userMessage += '\n\n💡 Abra o Console (F12) para ver logs detalhados.';
+        userMessage += '\n📖 Veja o guia: BREVO_CONFIG_GUIDE.md';
+        
+        alert(userMessage);
+        
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+      }
+    }
+    
+    // GRÁFICO DE RENDIMENTOS COMPARATIVO - Aguardar carregamento do Chart.js
+    let investmentChart = null;
+    
+    function updateChart(valorInicial) {
+      const ctx = document.getElementById('yieldChart');
+      if(!ctx || typeof Chart === 'undefined') return;
+      
+      // Taxas de rendimento
+      const APY_DOLLARUP = 0.12;
+      const APY_RENDA_FIXA = 0.08;
+      const APY_POUPANCA = 0.06;
+      
+      // Calcular evolução mês a mês
+      const meses = 12;
+      const labels = ['Mês 0', 'Mês 1', 'Mês 2', 'Mês 3', 'Mês 4', 'Mês 5', 'Mês 6', 'Mês 7', 'Mês 8', 'Mês 9', 'Mês 10', 'Mês 11', 'Mês 12'];
+      
+      const dataDollarup = [valorInicial];
+      const dataRendaFixa = [valorInicial];
+      const dataPoupanca = [valorInicial];
+      
+      for(let mes = 1; mes <= meses; mes++) {
+        const anos = mes / 12;
+        dataDollarup.push(valorInicial * Math.pow(1 + APY_DOLLARUP, anos));
+        dataRendaFixa.push(valorInicial * Math.pow(1 + APY_RENDA_FIXA, anos));
+        dataPoupanca.push(valorInicial * Math.pow(1 + APY_POUPANCA, anos));
+      }
+      
+      const gradientDollarup = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+      gradientDollarup.addColorStop(0, 'rgba(0, 217, 163, 0.25)');
+      gradientDollarup.addColorStop(1, 'rgba(0, 179, 134, 0.02)');
+      
+      // Destruir gráfico anterior se existir
+      if(investmentChart) {
+        investmentChart.destroy();
+      }
+      
+      // Criar novo gráfico
+      investmentChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'DollarUp (12% a.a.)',
+              data: dataDollarup,
+              borderColor: '#00D9A3',
+              backgroundColor: gradientDollarup,
+              borderWidth: 4,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 5,
+              pointHoverRadius: 8,
+              pointBackgroundColor: '#fff',
+              pointBorderColor: '#00D9A3',
+              pointBorderWidth: 3,
+            },
+            {
+              label: 'Renda Fixa (8% a.a.)',
+              data: dataRendaFixa,
+              borderColor: '#F59E0B',
+              backgroundColor: 'transparent',
+              borderWidth: 3,
+              borderDash: [5, 5],
+              fill: false,
+              tension: 0.3,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#fff',
+              pointBorderColor: '#F59E0B',
+              pointBorderWidth: 2,
+            },
+            {
+              label: 'Poupança (6% a.a.)',
+              data: dataPoupanca,
+              borderColor: '#6B7280',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              borderDash: [8, 4],
+              fill: false,
+              tension: 0.2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              pointBackgroundColor: '#fff',
+              pointBorderColor: '#6B7280',
+              pointBorderWidth: 2,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { 
+              display: true,
+              position: 'bottom',
+              align: 'center',
+              labels: {
+                usePointStyle: true,
+                pointStyle: 'circle',
+                padding: 15,
+                font: {
+                  size: 13,
+                  weight: '700'
+                },
+                color: '#1A2332',
+                boxWidth: 12,
+                boxHeight: 12
+              }
+            },
+            tooltip: {
+              backgroundColor: '#fff',
+              titleColor: '#1A2332',
+              bodyColor: '#6B7280',
+              borderColor: '#E5E7EB',
+              borderWidth: 1,
+              padding: 12,
+              displayColors: true,
+              callbacks: {
+                label: (context) => {
+                  return ` ${context.dataset.label}: US$ ${Math.round(context.parsed.y).toLocaleString('pt-BR')}`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              ticks: {
+                callback: (value) => 'US$ ' + Math.round(value).toLocaleString('pt-BR'),
+                color: '#6B7280',
+                font: { size: 11, weight: '600' }
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, .05)',
+                drawBorder: false
+              }
+            },
+            x: {
+              ticks: {
+                color: '#6B7280',
+                font: { size: 11, weight: '600' }
+              },
+              grid: { display: false }
+            }
+          },
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          }
+        }
+      });
+    }
+    
+    window.addEventListener('load', function() {
+      const ctx = document.getElementById('yieldChart');
+      if(ctx && typeof Chart !== 'undefined') {
+        // Inicializar com valor padrão de US$ 2000 (R$ 10.000 / 5.2)
+        updateChart(1923);
+      } else if(!ctx) {
+        console.error('Elemento canvas #yieldChart não encontrado');
+      } else {
+        console.error('Chart.js não foi carregado. Verifique o script CDN.');
+      }
+    });
+
+
+    // SIMULADOR
+    const valorInput = document.getElementById('valor');
+    const prazoInput = document.getElementById('prazo');
+    const moedaSelect = document.getElementById('moeda');
+    const unidadeSelect = document.getElementById('unidade');
+    const estimativaEl = document.getElementById('estimativa');
+    const lucroEl = document.getElementById('lucro');
+    const progressBar = document.getElementById('progressBar');
+
+    function calcular() {
+      const valor = Math.max(0, Number(valorInput.value) || 0);
+      const prazo = Math.max(1, Number(prazoInput.value) || 1);
+      const moeda = moedaSelect.value;
+      const unidade = unidadeSelect.value;
+      
+      // Taxas de rendimento anuais
+      const APY_DOLLARUP = 0.12;   // 12% a.a.
+      const APY_POUPANCA = 0.06;   // 6% a.a.
+      const APY_RENDA_FIXA = 0.08; // 8% a.a.
+      const USDBRL = 5.2;
+      
+      let anos = unidade === 'meses' ? prazo / 12 : prazo;
+      let valorUSD = moeda === 'BRL' ? valor / USDBRL : valor;
+      
+      // Cálculo DollarUp (12% a.a.)
+      const valorFinalDollarup = valorUSD * Math.pow(1 + APY_DOLLARUP, anos);
+      const lucroDollarup = valorFinalDollarup - valorUSD;
+      
+      // Cálculo Poupança (6% a.a.)
+      const valorFinalPoupanca = valorUSD * Math.pow(1 + APY_POUPANCA, anos);
+      const lucroPoupanca = valorFinalPoupanca - valorUSD;
+      
+      // Cálculo Renda Fixa (8% a.a.)
+      const valorFinalRendaFixa = valorUSD * Math.pow(1 + APY_RENDA_FIXA, anos);
+      const lucroRendaFixa = valorFinalRendaFixa - valorUSD;
+      
+      // Atualizar valores principais
+      estimativaEl.textContent = 'US$ ' + Math.round(valorFinalDollarup).toLocaleString('pt-BR');
+      lucroEl.textContent = 'US$ ' + Math.round(lucroDollarup).toLocaleString('pt-BR');
+      
+      // Atualizar valores comparativos
+      document.getElementById('compareDollarup').textContent = 'US$ ' + Math.round(lucroDollarup).toLocaleString('pt-BR');
+      document.getElementById('comparePoupanca').textContent = 'US$ ' + Math.round(lucroPoupanca).toLocaleString('pt-BR');
+      document.getElementById('compareRendaFixa').textContent = 'US$ ' + Math.round(lucroRendaFixa).toLocaleString('pt-BR');
+      
+      const percentual = Math.min(100, (lucroDollarup / valorUSD) * 100 * 0.8);
+      progressBar.style.width = percentual + '%';
+      
+      // Atualizar gráfico com novos valores
+      updateChart(valorUSD);
+    }
+
+    if(valorInput) valorInput.addEventListener('input', calcular);
+    if(prazoInput) prazoInput.addEventListener('input', calcular);
+    if(moedaSelect) moedaSelect.addEventListener('change', calcular);
+    if(unidadeSelect) unidadeSelect.addEventListener('change', calcular);
+
+    calcular();
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Scroll suave
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if(href !== '#' && href.startsWith('#')) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if(target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
